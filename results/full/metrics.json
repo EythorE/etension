@@ -1,0 +1,31 @@
+{
+  "mixer": "full",
+  "n_params": 117377,
+  "pair_near_r2": 0.9929624938300013,
+  "pair_mid_r2": 0.9913618375353092,
+  "pair_far_r2": 0.9913795500470046,
+  "local_r2": 0.9895385704512112,
+  "segment_r2": 0.9452889737497394,
+  "leakage_ratio": 0.02422857591162029,
+  "nmse_overall": 0.08315245070490151,
+  "noise_floor_nmse": 0.03939614489291456,
+  "structure": {
+    "mass_in_structure": [
+      0.2398,
+      0.996
+    ],
+    "far_source_mass": [
+      0.9727,
+      0.0
+    ]
+  },
+  "masked_to_structure": {
+    "pair_near_r2": 0.6209313665828646,
+    "pair_mid_r2": 0.6372916337919914,
+    "pair_far_r2": 0.4984116584504985,
+    "local_r2": 0.22361330546050862,
+    "segment_r2": -8.552125049266458,
+    "leakage_ratio": 0.768316665301652,
+    "nmse_overall": 5.072004266406174
+  }
+}
