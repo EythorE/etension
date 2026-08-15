@@ -152,7 +152,83 @@ the mechanism.
 
 ## Results
 
-_Filled in by `python -m experiments.run_all` — see `results/summary.md`._
+All six mechanisms, identical backbone (~117k params), identical data stream,
+4000 steps. R² of predicted output change against exact ground-truth change
+under counterfactual edits; noise-floor NMSE 0.039. Full numbers in
+`results/summary.md` / `results/summary.json`.
+
+| mixer | pair near | pair mid | pair **far** | segment | local | leakage ↓ | nmse ↓ |
+|---|---|---|---|---|---|---|---|
+| full | 0.993 | 0.991 | **0.991** | 0.945 | 0.990 | 0.024 | 0.083 |
+| local | 0.800 | 0.019 | **0.000** | 0.778 | 0.833 | 0.274 | 0.292 |
+| pooled | 0.798 | 0.036 | **0.003** | 0.821 | 0.852 | 0.210 | 0.256 |
+| lowrank | 0.771 | 0.617 | **0.414** | 0.961 | 0.521 | 0.048 | 0.364 |
+| oracle | 0.994 | 0.989 | **0.993** | 0.985 | 0.896 | 0.055 | 0.078 |
+| spanpred | 0.992 | 0.993 | **0.992** | 0.971 | 0.958 | 0.123 | 0.094 |
+
+**The two standard compressions fail on orthogonal axes, both as predicted.**
+`pooled` — the pyramid — has global reach and it is worth nothing at
+resolution: far retrieval 0.003, no head puts more than 1% of its mass on the
+far source, because the source only exists as a chunk average. Its smooth read
+is fine (segment 0.821): gist survives the climb, sharpness does not.
+`lowrank` is the mirror image: the best cheap mechanism at the smooth read
+(segment 0.961, leakage 0.048) while sharp selection is weak *everywhere
+including nearby* — local is 0.521 with the source one position away, and
+retrieval decays gradually with distance (0.77 → 0.62 → 0.41) as prefix
+competition washes out the soft match. Pyramids fail by distance; low rank
+fails by sharpness. Neither can hold a sharp feature at range.
+
+**The structural prior is sufficient.** `oracle` (trained with support
+restricted to triangle ∪ pairs ∪ band) matches full attention on every pair
+column and beats it on the segment read (0.985 vs 0.945) — the mask does the
+boundary-exclusion the unconstrained model has to learn. Perfect knowledge of
+the boundaries is enough.
+
+**A cheap predictor finds it.** `spanpred` closes the oracle gap almost
+entirely (far 0.992 vs oracle 0.993) with a two-conv boundary head and a
+rank-8 link head over raw inputs. The best layer-0 head puts 98% of its mass
+exactly on the far source. Its one visible weakness is boundary sharpness
+(leakage 0.123 vs full's 0.024): the soft triangle is only as sharp as β.
+
+**Thresholded at inference (the YOLO move), retrieval survives on a budget of
+~15 slots per row** (vs. the ~128 an average causal row has): far pair R²
+0.969 with the soft bias replaced by a hard `S > 0.5` mask. What degrades is
+the smooth read (segment 0.654) — thresholding clips the tails of long
+triangles. The oracle row shows this is predictor calibration, not a failure
+of the prior: with true boundaries the hard triangle costs nothing.
+
+**Is the boundary structure a sufficient description of what attention does?
+Two different answers, and the difference is the finding.** As a
+*specification* — train with it — yes: `oracle` and `spanpred` lose nothing.
+As a *description of what unconstrained training finds* — no: masking the
+trained full model to the ground-truth structure at inference destroys it
+(segment R² −8.6, NMSE 5.07), and its layer-0 carries only 24% of its mass
+inside the structure even while its best head is 97% on the far needle. The
+sharp needle-finding lives inside the structural description; the model's
+smooth machinery (broad, distributed averaging) does not. Compression by
+boundaries has to be imposed during training, not read off afterwards.
+
+**Trainability was the hidden variable.** Under plain MSE, full attention
+failed to form the retrieval circuit at all (far R² ≈ 0 after 3000 steps):
+routing the source payload has zero first-order gradient until the
+multiplicative readout exists, and vice versa. It needed the pair rows
+upweighted to escape the saddle. The structural mixers face the same saddle
+with a much smaller search space — which is the supervision argument from the
+other direction: the prior is not just a cost model, it is an optimization
+aid.
+
+### Look at it
+
+The maps are legible, which was part of the point. `spanpred`'s layer-0 heads
+organise into the segment triangles by themselves, and the predicted structure
+panel is nearly indistinguishable from the ground truth; `pooled`'s mass is
+visibly trapped in its diagonal band.
+
+![spanpred attention maps](results/figs/spanpred.png)
+![full attention maps](results/figs/full.png)
+![pooled attention maps](results/figs/pooled.png)
+
+Remaining figures: `results/figs/{local,lowrank,oracle}.png`.
 
 ## Running it
 

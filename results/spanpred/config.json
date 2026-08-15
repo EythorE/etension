@@ -1,0 +1,34 @@
+{
+  "model": {
+    "mixer": "spanpred",
+    "seq_len": 256,
+    "dim": 64,
+    "layers": 2,
+    "heads": 4,
+    "window": 16,
+    "pool_sizes": [
+      16,
+      64
+    ],
+    "pred_hidden": 32,
+    "pred_rank": 8,
+    "band": 2
+  },
+  "train": {
+    "mixer": "spanpred",
+    "steps": 4000,
+    "batch": 16,
+    "seq_len": 256,
+    "dim": 64,
+    "layers": 2,
+    "heads": 4,
+    "lr": 0.001,
+    "seed": 0,
+    "supervision": "aux",
+    "aux_weight": 1.0,
+    "pair_row_weight": 8.0,
+    "threads": 4,
+    "out": "results"
+  },
+  "n_params": 126132
+}

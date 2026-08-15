@@ -1,0 +1,32 @@
+{
+  "mixer": "spanpred",
+  "n_params": 126132,
+  "pair_near_r2": 0.9921563181975025,
+  "pair_mid_r2": 0.9929388557027433,
+  "pair_far_r2": 0.9918058427996033,
+  "local_r2": 0.9582678161454439,
+  "segment_r2": 0.9709413665066373,
+  "leakage_ratio": 0.12348324110110916,
+  "nmse_overall": 0.09389767200123984,
+  "noise_floor_nmse": 0.03939614489291456,
+  "structure": {
+    "mass_in_structure": [
+      0.6958,
+      0.9935
+    ],
+    "far_source_mass": [
+      0.9788,
+      0.0005
+    ]
+  },
+  "hard_threshold": {
+    "pair_near_r2": 0.977478806543178,
+    "pair_mid_r2": 0.9885866022385226,
+    "pair_far_r2": 0.969372428812487,
+    "local_r2": 0.9552327385968992,
+    "segment_r2": 0.6543689145116606,
+    "leakage_ratio": 0.24726165439665346,
+    "nmse_overall": 0.26420315106657544,
+    "mean_slots_per_row": 15.1
+  }
+}
