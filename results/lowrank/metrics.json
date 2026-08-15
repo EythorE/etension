@@ -1,0 +1,22 @@
+{
+  "mixer": "lowrank",
+  "n_params": 117377,
+  "pair_near_r2": 0.771271757169137,
+  "pair_mid_r2": 0.6173412076177316,
+  "pair_far_r2": 0.413542490456293,
+  "local_r2": 0.5211721329207386,
+  "segment_r2": 0.9612007640738225,
+  "leakage_ratio": 0.048451325449509274,
+  "nmse_overall": 0.3639928573180398,
+  "noise_floor_nmse": 0.03939614489291456,
+  "structure": {
+    "mass_in_structure": [
+      0.2612,
+      0.8275
+    ],
+    "far_source_mass": [
+      0.0805,
+      0.0001
+    ]
+  }
+}
