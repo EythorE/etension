@@ -1,5 +1,8 @@
 # etension — attention compression at full resolution
 
+> Conclusions and a detailed, referenced description of the `spanpred` method:
+> [docs/CONCLUSIONS.md](docs/CONCLUSIONS.md).
+
 Attention costs N² because it builds an explicit map from every position to
 every position. Every cheaper alternative replaces that map with a compressed
 description of it. This repo is a controlled test of **which compression is the
