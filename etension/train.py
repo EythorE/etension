@@ -66,7 +66,22 @@ def train(args) -> Path:
             )
         pred, extras = model(x, **kwargs)
         mse = F.mse_loss(pred, y)
-        loss = mse
+        # Pair-target rows are few (12 of 256) and their gradient has a
+        # chicken-and-egg structure (routing the source payload only pays off
+        # once the multiplicative readout exists, and vice versa), so the
+        # retrieval circuit forms slowly under plain MSE.  Upweighting those
+        # rows — identically for every mechanism — speeds circuit formation
+        # without changing what any mechanism *can* represent, and the
+        # counterfactual probes cannot be gamed by loss weighting: a mechanism
+        # that cannot see v_j still cannot track it.
+        if args.pair_row_weight != 1.0:
+            w = torch.ones_like(y)
+            for b, meta in enumerate(batch.metas):
+                for _j, kk, _name in meta["pairs"]:
+                    w[b, kk] = args.pair_row_weight
+            loss = ((pred - y) ** 2 * w).sum() / w.sum()
+        else:
+            loss = mse
         aux_b = aux_l = None
         if args.mixer == "spanpred" and args.supervision == "aux":
             b_target = x[..., CH_B]
@@ -115,7 +130,7 @@ def train(args) -> Path:
 def build_parser():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--mixer", choices=MIXERS, required=True)
-    p.add_argument("--steps", type=int, default=3000)
+    p.add_argument("--steps", type=int, default=4000)
     p.add_argument("--batch", type=int, default=16)
     p.add_argument("--seq-len", type=int, default=256)
     p.add_argument("--dim", type=int, default=64)
@@ -125,6 +140,7 @@ def build_parser():
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--supervision", choices=["aux", "none"], default="aux")
     p.add_argument("--aux-weight", type=float, default=1.0)
+    p.add_argument("--pair-row-weight", type=float, default=8.0)
     p.add_argument("--threads", type=int, default=4)
     p.add_argument("--out", type=str, default="results")
     return p

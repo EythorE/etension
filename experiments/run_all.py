@@ -81,7 +81,7 @@ def summarize(results: dict, out_dir: Path, noise_floor: float):
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--mixers", nargs="*", default=DEFAULT_MIXERS)
-    p.add_argument("--steps", type=int, default=3000)
+    p.add_argument("--steps", type=int, default=4000)
     p.add_argument("--out", type=str, default="results")
     p.add_argument("--n-eval", type=int, default=64)
     args = p.parse_args()

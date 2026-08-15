@@ -39,8 +39,10 @@ import numpy as np
 
 # input channel layout
 CH_V, CH_U, CH_B, CH_ROLE = 0, 1, 2, 3
-KEY_DIM = 4
-N_CHANNELS = 4 + KEY_DIM
+KEY_DIM = 8
+CH_KEY_SRC = slice(4, 4 + KEY_DIM)  # pair source advertises its key here
+CH_KEY_TGT = slice(4 + KEY_DIM, 4 + 2 * KEY_DIM)  # pair target asks with the same key here
+N_CHANNELS = 4 + 2 * KEY_DIM
 
 
 @dataclass(frozen=True)
@@ -48,7 +50,7 @@ class TaskConfig:
     seq_len: int = 256
     seg_len_min: int = 12
     seg_len_max: int = 40
-    pairs_per_group: int = 3
+    pairs_per_group: int = 4
     # (name, min_distance, max_distance); max is clamped to seq_len - 2
     pair_groups: tuple = (("near", 2, 16), ("mid", 24, 64), ("far", 96, 248))
     a_loc: float = 1.0
@@ -95,14 +97,17 @@ def sample_inputs(rng: np.random.Generator, meta: dict, cfg: TaskConfig) -> np.n
     x[meta["starts"], CH_B] = 1.0
     for j, k, _name in meta["pairs"]:
         key = rng.standard_normal(KEY_DIM)
-        key = (key / np.linalg.norm(key)).astype(np.float32)  # unit sphere:
-        # matched keys dot to exactly 1, unmatched to ~0 — addressing is sharp
-        # by construction, so retrieval failures are the mechanism's, not the
-        # address's
+        key = (key / np.linalg.norm(key)).astype(np.float32)
+        # Addressing is made as learnable as possible on purpose: unit-norm
+        # keys (matched dot = 1, unmatched ~ 0) in *separate* source/target
+        # channels, so query-key matching is linear in the input and there is
+        # no self-match to gate away.  Failures on the pair probe are then
+        # attributable to the mechanism's resolution at distance, not to how
+        # hard the addressing circuit is to form.
         x[j, CH_ROLE] = 1.0
         x[k, CH_ROLE] = -1.0
-        x[j, 4:] = key
-        x[k, 4:] = key
+        x[j, CH_KEY_SRC] = key
+        x[k, CH_KEY_TGT] = key
     return x
 
 
