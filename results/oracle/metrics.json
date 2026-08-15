@@ -1,0 +1,22 @@
+{
+  "mixer": "oracle",
+  "n_params": 117377,
+  "pair_near_r2": 0.9938287751972867,
+  "pair_mid_r2": 0.9890723487048207,
+  "pair_far_r2": 0.9931923385326589,
+  "local_r2": 0.8959919626477317,
+  "segment_r2": 0.9851414686406675,
+  "leakage_ratio": 0.05485011501298254,
+  "nmse_overall": 0.07765991587206417,
+  "noise_floor_nmse": 0.03939614489291456,
+  "structure": {
+    "mass_in_structure": [
+      1.0,
+      1.0
+    ],
+    "far_source_mass": [
+      0.9796,
+      0.0908
+    ]
+  }
+}
