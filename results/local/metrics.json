@@ -1,0 +1,22 @@
+{
+  "mixer": "local",
+  "n_params": 117377,
+  "pair_near_r2": 0.7995059458079719,
+  "pair_mid_r2": 0.01917339916324179,
+  "pair_far_r2": -5.110191276691545e-05,
+  "local_r2": 0.8331223394842682,
+  "segment_r2": 0.777849182745711,
+  "leakage_ratio": 0.27402402552419464,
+  "nmse_overall": 0.2923022573442352,
+  "noise_floor_nmse": 0.03939614489291456,
+  "structure": {
+    "mass_in_structure": [
+      0.7504,
+      0.9366
+    ],
+    "far_source_mass": [
+      0.0,
+      0.0
+    ]
+  }
+}
